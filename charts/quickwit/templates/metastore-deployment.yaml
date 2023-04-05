@@ -5,7 +5,11 @@ metadata:
   labels:
     {{- include "quickwit.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.metastore.replicaCount }}
+  {{- $replicas := .Values.metastore.replicaCount -}}
+  {{ if or .Values.config.metastore_uri .Values.config.default_index_root_uri }}
+    {{- $replicas = 1 -}}
+  {{ end }}
+  replicas: {{ $replicas }}
   selector:
     matchLabels:
       {{- include "quickwit.metastore.selectorLabels" . | nindent 6 }}
