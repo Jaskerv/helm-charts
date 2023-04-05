@@ -6,7 +6,9 @@ metadata:
     {{- include "quickwit.labels" . | nindent 4 }}
 spec:
   {{- $replicas := .Values.metastore.replicaCount -}}
-  {{ if or .Values.config.metastore_uri .Values.config.default_index_root_uri }}
+  {{ if and (or .Values.config.metastore_uri .Values.config.default_index_root_uri) (.Values.config.postgres) }}
+    {{ fail "Invalid metastore config: config cannot be postgres and file backed"}}
+  {{ else if or .Values.config.metastore_uri .Values.config.default_index_root_uri }}
     {{- $replicas = 1 -}}
   {{ end }}
   replicas: {{ $replicas }}
